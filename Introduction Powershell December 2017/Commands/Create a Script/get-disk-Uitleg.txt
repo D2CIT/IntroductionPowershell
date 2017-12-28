@@ -1,0 +1,60 @@
+﻿#############################################################################
+#
+#  Uitleg WMI commandline
+#
+#############################################################################
+
+#region WMI
+Get-WmiObject -class Win32_LogicalDisk
+Get-WmiObject -class Win32_LogicalDisk -computername 
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3"
+#endregion
+
+#region select properties
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | select-object *
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | select-object PsComputername,DeviceID,FreeSpace,Size
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | 
+        select-object PsComputername,`
+                      DeviceID, `
+                      FreeSpace, `
+                      Size
+#endregion
+
+#region namen aanpassen
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | 
+        select-object PsComputername,`
+                      DeviceID, `
+                      @{name='FreeSpace';expression={$_.FreeSpace / 1MB }}, `
+                      Size
+#endregion   
+              
+#region WMI FreeSpace toevoegen en omzetten naar GB en MB
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | 
+        select-object PsComputername,`
+                      DeviceID, `
+                      @{name='FreeSpace(MB)';expression={$_.FreeSpace / 1MB }}, `
+                      @{name='Size(GB)';expression={$_.Size / 1GB}},
+                      @{name='%Free';expression={$_.FreeSpace / $_.Size * 100}}
+#endregion
+
+#region WMI afronden
+Get-WmiObject -class Win32_LogicalDisk -computername . -Filter "Drivetype=3" | 
+        select-object PsComputername,`
+                      DeviceID, `
+                      @{name='FreeSpace';expression={$_.FreeSpace / 1MB -as [int]}}, `
+                      @{name='Size(GB)';expression={$_.Size / 1GB -as [int]}}, `
+                      @{name='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}}
+#endregion
+
+#region variabelen toevoegen
+$computername = "."
+$drivetype = "3"
+
+Get-WmiObject -class Win32_LogicalDisk -computername $computername `
+  -filter "drivetype=$drivetype " |
+   Sort-Object -property DeviceID |
+   Select-Object -property PScomputername,DeviceID,
+     @{name='FreeSpace(MB)';expression={$_.FreeSpace / 1MB -as [int]}},
+     @{name='Size(GB)';expression={$_.Size / 1GB -as [int]}},
+     @{name='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}} 
+#endregion
