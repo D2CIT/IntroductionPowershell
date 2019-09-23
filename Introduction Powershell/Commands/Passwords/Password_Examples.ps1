@@ -57,14 +57,18 @@
         [String]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        $PathToDB = ".\NewDatabase.kdbx",
+        $PathToDB = "C:\Users\Markv\SynologyDrive\06_Zakelijk\10_Git\IntroductionPowershell\Introduction Powershell\Commands\Passwords\TestDatabase.kdbx",
 
         # Param3 help description
         [Parameter(Mandatory=$True)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]
-        $EntryToFind 
+        $EntryToFind ,
+
+        # Param3 help description
+        [Parameter(Mandatory=$True)]
+        $keepassPassword
  
        
     )
@@ -227,12 +231,12 @@
     }#endprocess
 
     Process{
-        If(!($PlainPassword)){
+        If(!($keepassPassword)){
                 $BSTR                 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS : " -AsSecureString))
-                $Global:PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)            
+                $Global:keepassPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)            
         }
 
-        $Password      = Get-PasswordInKeePassDBUsingPassword -PathToDB $PathToDB -PasswordToDB $PlainPassword  -EntryToFind $EntryToFind
+        $Password      = Get-PasswordInKeePassDBUsingPassword -PathToDB $PathToDB -PasswordToDB $keepassPassword  -EntryToFind $EntryToFind
     
     }#process
 
@@ -270,7 +274,10 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         $PathToDB            =   "E:\Keypass\NewDatabase2.kdbx", 
-        [switch]$force,             
+        [switch]$force, 
+        # Param3 help description
+        [Parameter(Mandatory=$True)]
+        $keepassPassword = "P@ssw0rd12!",            
        # Param3 Entryname
         [Parameter(Mandatory=$True)]
         [String]$Entryname,
@@ -282,12 +289,12 @@
  
      Begin{
             If($force){
-                   $BSTR                = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS database : " -AsSecureString))
-                   $Global:PasswordToDB = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
+                $BSTR                   = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS database : " -AsSecureString))
+                $Global:keepassPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
             }
-            If(!($PasswordToDB)){
-                    $BSTR                = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS database : " -AsSecureString))
-                    $Global:PasswordToDB = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)            
+            If(!($keepassPassword)){
+                $BSTR                   = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS : " -AsSecureString))
+                $Global:keepassPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)            
             }
 
             #############################################################################################
@@ -299,7 +306,7 @@
             $IOConnectionInfo      = New-Object KeePassLib.Serialization.IOConnectionInfo
             $IOConnectionInfo.Path = $PathToDB
     
-                $CompositeKey.AddUserKey((New-Object KeePassLib.Keys.KcpPassword($PasswordToDB))); 
+                $CompositeKey.AddUserKey((New-Object KeePassLib.Keys.KcpPassword($keepassPassword))); 
                 $KeypassDatabase.Open($IOConnectionInfo,$CompositeKey,$NULLstatusLogger)   
 
 
@@ -709,7 +716,7 @@
 # Set Credential variable
   $SecurePassword = Read-Host -Prompt "Add Password" -AsSecureString
   $credential     = New-Object System.Management.Automation.PSCredential("lab\admininistrator",$SecurePassword)
-  $credential     = New-object System.Management.Automation.PSCredential -ArgumentList "lab\admininistrator", $password   
+  $credential     = New-object System.Management.Automation.PSCredential -ArgumentList "lab\admininistrator", $SecurePassword   
   $credential     = get-credential -Message "Add credentials" -username "lab\admininistrator"
 
 # Convert Back to plain password
@@ -746,7 +753,7 @@
 ####################################################################################
  $password       = "Z33rGeheim_metAES"
  $SecurePassword = $password | ConvertTo-SecureString -asPlainText -Force
- $securePassword = Convert-PLainpasswordtoSecurestring -token $password
+ #$securePassword = Convert-PLainpasswordtoSecurestring  $password
 
 # AES
  [int]$AESKeySize = 32
@@ -761,9 +768,9 @@
   $reversedPassword
 
 # use the function 
-  $AESKey      = new-AESKey -AESKeySize 16
-  $HashedToken = Convertto-SecureHashAES -token "DitIsEenSecureToken" -tokenName "UnsealKey1" -AESKey $AESKey
-  Convertfrom-SecureHashAES -Hash $($HashedToken.hash) -AESKey $AESKey
+  #$AESKey      = new-AESKey -AESKeySize 16
+  #$HashedToken = Convertto-SecureHashAES -token "DitIsEenSecureToken" -tokenName "UnsealKey1" -AESKey $AESKey
+  #Convertfrom-SecureHashAES -Hash $($HashedToken.hash) -AESKey $AESKey
 
 #---------------------------------------------------
 # Extra : Secure the AES key aswell
@@ -800,19 +807,22 @@
 ####################################################################################
 # GET PASSWORD form keepass
   $PathTokeepassDB      = "C:\Users\Markv\SynologyDrive\06_Zakelijk\10_Git\IntroductionPowershell\Introduction Powershell\Commands\Passwords\TestDatabase.kdbx"
-  $BSTR                 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS ($i/3) : " -AsSecureString))
+  $KeePassPassword      = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($(read-host -Prompt "Password of KeePASS ($i/3) : " -AsSecureString))
         
-  Connectto-Keepass -PlainPassword $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR))  -PathTokeepassDB $PathTokeepassDB 
+  Connectto-Keepass -PlainPassword $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto($KeePassPassword))  -PathTokeepassDB $PathTokeepassDB 
 
 
   $EntryToFind   = "Cursus_Powershell"
 # secure Password
-  $Passwordfromkeypass = (ConvertTo-SecureString ((get-KeePassPassword -PathToDB  $PathTokeepassDB  -EntryToFind $EntryToFind).password ) -AsPlainText -Force )
-
+  $Passwordfromkeypass = (get-KeePassPassword -PathToDB  $PathTokeepassDB `
+                                              -EntryToFind $EntryToFind `
+                                              -keepassPassword $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto($KeePassPassword)) ).password | 
+                                                Convertto-SecureString -asPlainText -Force
+                                                                       
 # Convert Back to plain password
-  $BSTR          = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Passwordfromkeypass)
-  $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
-  $PlainPassword
+  $BSTR             = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Passwordfromkeypass)
+  $revertedPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
+  $revertedPassword
 
 
   $x = get-KeePassPassword -PathToDB $PathTokeepassDB -EntryToFind Cursus_Powershell
@@ -823,8 +833,18 @@
   $Entryname     = "Powershell"
   $EntryUsername = "Powershell"
   $entryPassword = "DitisEentestWachtwoord"
-  set-KeePassPassword -PathToDB $PathTokeepassDB -Entryname $Entryname -EntryUsername $EntryUsername -EntryPassword $entryPassword -EntryURL "www.nu.nl" -EntryNotes "testaccount" -force
-  get-KeePassPassword -PathToDB $PathTokeepassDB -EntryToFind $Entryname 
+  set-KeePassPassword -PathToDB $PathTokeepassDB `
+                      -Entryname $Entryname `
+                      -EntryUsername $EntryUsername `
+                      -EntryPassword $entryPassword `
+                      -EntryURL "www.nu.nl" `
+                      -EntryNotes "testaccount" `
+                      -force `
+                      -keepassPassword $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto($KeePassPassword))
+
+  get-KeePassPassword -PathToDB $PathTokeepassDB `
+                      -EntryToFind $Entryname `
+                      -keepassPassword $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto($KeePassPassword))
 
 
 ####################################################################################
