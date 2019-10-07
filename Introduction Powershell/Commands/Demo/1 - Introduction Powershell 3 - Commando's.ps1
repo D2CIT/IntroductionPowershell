@@ -1,19 +1,21 @@
-
-######################################################################
 #======================================================================
-#Bekende commando's
+# Bekende commando's
 #======================================================================
 dir
 ls
 get-childitem
 
-cd demo
+cd c:\powershell
 mkdir demo
+cd demo
 mkdir copytest
+"create test file" | out-file C:\powershell\demo\copytest\test01.txt
 copy copytest copytest2
-cp copytest copytest2
-copy-item copytest copytest2
+cp copytest copytest3
+copy-item copytest copytest4
 del c*
+remove-item -Recurse c*
+remove-item -Recurse c* -Confirm:$False
 
 cd\
 cd demo
@@ -31,10 +33,10 @@ get-alias -Definition copyitem
 get-eventlog -LogName service -ComputerName . -verbose
 get-eventlog -LogName application -ComputerName . -verbose
 
-get-help commonparamaters
+
 
 #======================================================================
-#Tab completion,afkortingen en parameter aliasen
+# Tab completion,afkortingen en parameter aliasen
 #======================================================================
 get-se
 get-service -co
@@ -68,14 +70,17 @@ test-connection
 net use * \\localhost\c$
 net use 
 Get-WmiObject Win32_NetworkConnection 
- - niet te zien in de explorer	(open explorer)
- - wel in een andere PS session (open ander Powershell session)
+# - niet te zien in de explorer	(open explorer)
+# - wel in een andere PS session (open ander Powershell session)
 
 New-PSDrive -Name W -PSProvider FileSystem -Root \\localhost\c$
 w:
- - alleen te zien in deze powershell session
- - niet te zien via net use
- - niet te zien in explorer
+# - alleen te zien in deze powershell session
+# - niet te zien via net use
+# - niet te zien in explorer
+
+# Open powershell (NOT AS ADMINISTRATOR)
+New-PSDrive -Name m -PSProvider FileSystem -Root \\localhost\c$ -Persist
 gcm -noun psdrive
 get-psdrive
 remove-psdrive -name w
@@ -91,17 +96,17 @@ get-_service
 w:
 
 
-######################################################################
-======================================================================
-Het Help systeem
-======================================================================
+
+#======================================================================
+# Het Help systeem
+#======================================================================
 get-command
 get-command get
 get-help get
 get-help get-command
 help get-command
 man get-command
-- help = function
+#- help = function
 cd function:
 dir h*
 type help
@@ -109,9 +114,9 @@ c:
 get-alias man
 get-alias -definition Help
 
-update-help
-save-help -destinationPath c:\demo\updatehelp
-update-help -sourcepath C:\Demo\Help
+update-help -force
+save-help -destinationPath C:\Powershell\Download_Help
+update-help -sourcepath C:\Powershell\Download_Help -Force
 
 get-help get
 get-help *job*
@@ -119,51 +124,49 @@ get-help job
 get-help -verb new
 
 
-======================================================================
-Het Help systeem
-======================================================================
+#======================================================================
+# Het Help systeem
+#======================================================================
 get-help get-eventlog
-- verplicht positioneel : [-LogName] <String>
-- optioneel positioneel : [[-InstanceId] <Int64[]>]
-- named                 : [-After <DateTime>]
-    	   		  [-ComputerName <String[]>]
-- overig		: [<CommonParameters>]
+#- verplicht positioneel : [-LogName] <String>
+#- optioneel positioneel : [[-InstanceId] <Int64[]>]
+#- named                 : [-After <DateTime>]
+#    	   		  [-ComputerName <String[]>]
+#- overig		: [<CommonParameters>]
 
 get-help common
 help about
 get-help get-command -online
 
 
-
-#####################################################################
-======================================================================
-Understanding the pipeline
-======================================================================
+#======================================================================
+# Understanding the pipeline
+#======================================================================
 get-service
-get-service |Where-object {$_.name -like "Wuauserv"} | gm
-get-service |Where-object {$_.name -like "Wuauserv"} | fl *
-get-service |Where-object {$_.name -like "Wuauserv"} | ft *
-get-service |Where-object {$_.status -eq "running"}
-get-service |Where-object {$_.status -eq "running"} | stop-service -whatif
-get-service |Where-object {$_.name -like "Wuauserv"}
-======================================================================
-pipeline Out-default
-======================================================================
+get-service | Where-object {$_.name -like "Wuauserv"} | gm
+get-service | Where-object {$_.name -like "Wuauserv"} | fl *
+get-service | Where-object {$_.name -like "Wuauserv"} | ft *
+get-service | Where-object {$_.status -eq "running"}
+get-service | Where-object {$_.status -eq "running"} | stop-service -whatif
+get-service | Where-object {$_.name -like "Wuauserv"}
+#======================================================================
+# pipeline Out-default
+#======================================================================
 get-process
 get-process | out-default
 help *service*
 get-service | ?{$_.status -eq "stopped"} | set-service -startuptype disabled -whatif
 get-service | ?{$_.status -eq "stopped"} | start-service -whatif
 
-======================================================================
-out cmdlets
-======================================================================
+#======================================================================
+# out cmdlets
+#======================================================================
 get-command -verb out
 get-help -verb out-*
 
-======================================================================
-write-output versus Write-Host
-======================================================================
+#======================================================================
+#write-output versus Write-Host
+#======================================================================
 get-command -verb write
 write-output "Dit is een Test"
 write-host "Dit is een Test"
@@ -179,19 +182,19 @@ write-host "hello" | gm
 write-host "hello" | where-object {$_.length -gt 10}
 
 
-#####################################################################
-======================================================================
-Providers
-======================================================================
-Sheet: Providers:
+
+#======================================================================
+#Providers
+#======================================================================
+#Sheet: Providers:
   Get-PSProvider
   Get-Command -Noun item
   
-Sheet: Filesysteem PS Provider
+#Sheet: Filesysteem PS Provider
   Get-PSDrive
   Get-ChildItem C:\demo
   
-Sheet: Navigeren en Wildcards
+#Sheet: Navigeren en Wildcards
   Set-Location -Path C:\demo
   cd HKLM:software
   Get-ChildItem
@@ -207,8 +210,8 @@ Sheet: Navigeren en Wildcards
   Set-Location C:\demo
   mkdir *
 
-cd c:\cursus
-get-pdrive
+cd c:\powershell
+get-psdrive
 mkdir "files"
 cd..
 cd windows
@@ -218,17 +221,17 @@ cd program files
 cd "program files"
 help dir
 dir -filter *.ps1 -recurse
-cd HKLM:          #(remoting regeistry via invoke-command)
+cd HKLM:          #(remoting registry via invoke-command)
 dir  
-cd software\mircrosoft
+cd software\microsoft
 dir -recurse | more
 dir -filter reg* -recurse
 get-item -path
 get-itemproperty "windows nt\currentversion"
 get-command -noun item *
 cd HKCU:
-mkdir "Sogeti"
-cd "Sogeti"
+mkdir "D2CIT"
+cd "D2CIT"
 new-itemproperty -path -name  cursus -value powershell
 get-itemproperty
-new-psdrive Sogeti -psprovider registry -root HKCU:\Sogeti
+new-psdrive D2CIT -psprovider registry -root HKCU:\D2CIT

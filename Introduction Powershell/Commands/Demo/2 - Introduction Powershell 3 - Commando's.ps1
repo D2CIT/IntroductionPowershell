@@ -2,9 +2,9 @@
 
 
 
-======================================================================
-Sheet Objecten
-======================================================================
+#======================================================================
+# Sheet Objecten
+#======================================================================
 cd\
 cls
 get-process
@@ -13,35 +13,35 @@ Get-Process | ConvertTo-HTML | Out-File processes.html
 .\processes.html
 
 
-======================================================================
-Sheet Waarom Gebruikt Powershell objecten?
-======================================================================
+#======================================================================
+# Sheet Waarom Gebruikt Powershell objecten?
+#======================================================================
 Get-Process
 
-======================================================================
-Sheet Hoe vinden we wat we met objecten kunnen?
-======================================================================
+#======================================================================
+##Sheet Hoe vinden we wat we met objecten kunnen?
+#======================================================================
 Get-Process | gm
 Get-Process -Name Notepad | Stop-Process
 Stop-Process –name Notepad
 
-======================================================================
-Sheet Sorteren en Selecteren
-======================================================================
+#======================================================================
+# Sheet Sorteren en Selecteren
+#======================================================================
 Get-Process | Sort-Object VM –descending
 Get-Process | Select-Object -property Name,ID,VM,PM
 Get-Process | Sort VM -descending | Select Name,ID,VM |	gm
 
-======================================================================
-Sheet Filteren en vergelijken
-======================================================================
+#======================================================================
+# Sheet Filteren en vergelijken
+#======================================================================
   Get-Service –name e*,*s*
   Get-ADComputer -filter "Name -eq 'l080073'"
   Get-Service | Where {$_.name -like "e*"
 
-======================================================================
-Sheet Vergelijkingen
-======================================================================
+#======================================================================
+# Sheet Vergelijkingen
+#======================================================================
 5 -eq 5
 "hello" -eq "help"
 10 -ne 5
@@ -59,9 +59,9 @@ Sheet Vergelijkingen
 “hello” –like “*ll*”
 "DC=medewerkers,DC=AD,DC=HVU,DC=NL" -match '^dc=([a-z]|[0-9])*(,dc=([a-z]|[0-9])*)*$'
 
-======================================================================
-Sheet Filteren van objecten uit de pipeline
-======================================================================
+#======================================================================
+# Sheet Filteren van objecten uit de pipeline
+#======================================================================
 Get-Service | get-member
 Get-Service | gm
 
@@ -79,9 +79,9 @@ Foreach($_ in (Get-content .\computers.txt)){
     Get-Service -ComputerName $_ | Where { $_.Status -eq 'Running'}
 }#Foreach
 
-======================================================================
-Sheet Het iteratief model
-======================================================================
+#======================================================================
+# Sheet Het iteratief model
+#======================================================================
 Get-Process
 Get-Process | Where-Object -filter { $_.Name -notlike 'powershell*' }
 Get-Process | Where{ $_.Name -notlike 'powershell*' } | Sort VM -descending
@@ -98,9 +98,9 @@ $uitkomst = [math]::round((ps | ? { $_.Name -notlike 'powershell*' } | Sort VM -
 write-host "Ze hebben samen" $uitkomst "MB in gebruik" -foreground Yellow
 
 
-======================================================================
-Sheet Hoe stuurt ps data door de pipeline?
-======================================================================
+#======================================================================
+# Sheet Hoe stuurt ps data door de pipeline?
+#======================================================================
   dir | select name
   notepad computers.txt
   Get-Content computers.txt
@@ -118,21 +118,21 @@ Sheet Hoe stuurt ps data door de pipeline?
   help stop-process -Full
   get-process -name s* | stop-process –whatif
 
-======================================================================
-Sheet Hoe worden objecten tekst?
-======================================================================
+#======================================================================
+# Sheet Hoe worden objecten tekst?
+#======================================================================
   Get-Service
   Get-Service | Out-Host
 
-======================================================================
-Sheet Default Output
-======================================================================
+#======================================================================
+# Sheet Default Output
+#======================================================================
   notepad C:\windows\system32\WindowsPowerShell\v1.0\DotNetTypes.format.ps1xml
   get-service | get-member
 
-======================================================================
-Sheet Formatting Subsystem
-======================================================================
+#======================================================================
+# Sheet Formatting Subsystem
+#======================================================================
   get-command -verb format
   help format-wide
   get-service | fw
