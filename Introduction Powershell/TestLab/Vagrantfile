@@ -1,0 +1,38 @@
+Vagrant.configure("2") do |config|
+
+ ########################################################
+ # PowerShell TestLab
+ ########################################################
+
+  config.vm.define "lab01" do |lab01|
+    lab01.vm.box                = "mrlesmithjr/windows2016"
+    lab01.vm.hostname           = "lab01"
+    lab01.vm.communicator       = "winrm"
+    lab01.winrm.username        = "vagrant"
+    lab01.winrm.password        = "vagrant"
+    lab01.winrm.basic_auth_only = true
+    lab01.vm.network "private_network", ip: "192.168.56.10" 
+    lab01.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus   = 2
+      vb.name   = "lab01"
+    end
+  end
+
+  config.vm.define "lab02" do |lab02|
+    lab02.vm.box                = "mrlesmithjr/windows2016"
+    lab02.vm.hostname           = "lab02"
+    lab02.vm.communicator       = "winrm"
+    lab02.winrm.username        = "vagrant"
+    lab02.winrm.password        = "vagrant"
+    lab02.winrm.basic_auth_only = true
+    lab02.vm.network "private_network", ip: "192.168.56.11" 
+    lab02.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus   = 2
+      vb.name   = "lab02"
+    end
+  end
+
+
+end 

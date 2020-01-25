@@ -34,4 +34,4 @@
 
 } #end function
 
-get-PowerShellService -Servicename wu* -Status running -computername localhost
+get-PowerShellService -Servicename * -Status running -computername localhost
