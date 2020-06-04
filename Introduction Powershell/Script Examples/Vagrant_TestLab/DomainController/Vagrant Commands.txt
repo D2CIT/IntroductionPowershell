@@ -1,0 +1,17 @@
+####################################################
+# Vagrant Commands
+####################################################
+# Status of vm's
+vagrant show
+
+# Install or start VM
+vagrant up
+
+# Create Snapshot
+vagrant snapshot save dc01 dc01_bare
+
+# restore to Snapshot
+vagrant snapshot restore dc01 dc01_bare
+
+# List all Snapshots
+vagrant snapshot list

@@ -1,0 +1,43 @@
+#################################################################################
+# Variables
+#################################################################################
+ScriptFolder = "C:\scripts" 
+ComputerName = "dc01" 
+IPAddress    = "192.168.56.10"
+Password     = "S3cr3tP@ssw0rd12!"
+
+#################################################################################
+# Vagrant config
+#################################################################################
+Vagrant.configure("2") do |config|
+
+  config.vm.define "dc01" do | dc01 |
+    dc01.vm.box                = "gusztavvargadr/windows-server"
+    dc01.vm.hostname           = "dc01"
+    dc01.vm.communicator       = "winrm"
+    dc01.winrm.username        = "vagrant"
+    dc01.winrm.password        = "vagrant"
+    dc01.winrm.basic_auth_only = true
+    dc01.vm.network "private_network", ip: "192.168.56.10"
+    dc01.vm.provider "virtualbox" do |vb|
+        vb.memory = 3048
+        vb.cpus   = 2
+        vb.name   = "dc01"
+    end 
+  
+    #################################################################################
+    # Prepare Host with provision scripts
+    #################################################################################
+    dc01.vm.provision "shell", path: "01_provision.ps1"
+    dc01.vm.provision "shell", path: "02_provision.ps1", args: [ScriptFolder, ComputerName, IPAddress, Password]
+    #################################################################################
+
+  end
+  
+end
+
+
+
+
+
+
