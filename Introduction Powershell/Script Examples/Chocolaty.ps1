@@ -30,7 +30,7 @@ choco install poshgit
 choco install vscode
 choco install powershell 
 choco install vmware-powercli-psmodule 
- 
+
 # Clone Course files with GIT
 mkdir c:\PowerShell
 set-location c:\PowerShell
