@@ -54,7 +54,7 @@ Function Install-DomainController {
     
         [Parameter(Mandatory=$false)]
         [string]$DomainDN          = "DC=d2cit,DC=it" , 
-      
+
         [Parameter(Mandatory=$false)]
         [string]$scriptfolder      = "c:\Scripts", 
     
@@ -74,7 +74,7 @@ Function Install-DomainController {
     )
 
     Begin{
-  
+
         configuration BuildDomainController         {
 
             Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xNetworking, xDnsServer, PSDesiredStateConfiguration 
@@ -299,7 +299,6 @@ Function Install-DomainController {
                     rebootNodeIfNeeded             = $rebootNodeIfNeeded
                 }
 
-              
             }
         } #configuration
         
@@ -308,17 +307,17 @@ Function Install-DomainController {
             mkdir "$scriptfolder\PowerShell\Cert"
         }
         #if (!(test-path $OutputPathLCM ) ){mkdir $OutputPathLCM}
-      
+
     }
 
     Process{
 
         # CREATE LOCAL SELFSIGNEDCERTIFICATE    
         if (!(test-path "$CertificateFile") -or $ForceCreateSelfSignedCertificate) {
-            $cert = New-SelfSignedCertificate -Type DocumentEncryptionCertLegacyCsp `
-                                              -DnsName "DSCEncryptionCert_$($env:computername)" `
-                                              -FriendlyName "Server Authentication" `
-                                              -HashAlgorithm SHA256 
+            $cert = New-SelfSignedCertificate   -Type DocumentEncryptionCertLegacyCsp `
+                                                -DnsName "DSCEncryptionCert_$($env:computername)" `
+                                                -FriendlyName "Server Authentication" `
+                                                -HashAlgorithm SHA256 
             $cert | Export-Certificate -FilePath $CertificateFile -Force
         }
         $ImpCert = Import-Certificate -filepath $CertificateFile -CertStoreLocation cert:\localmachine\my
@@ -365,7 +364,7 @@ Function Install-DomainController {
             #Create MOF File
             BuildDomainController -ConfigurationData  $ConfigDataSecure -OutputPath $outputPath
         }#EndIf
-               
+
         # Push Configuration
         Start-DscConfiguration -Wait -Force -Path C:\Scripts\PowerShell\dsc\BuildDomainController -Verbose  
     }
@@ -379,10 +378,10 @@ write-host "  02 : Domain controller  ( $ComputerName | $IPAddress )  "
 write-host "=========================================================="
 
 # Create Domain controller (Default Server will reboot)
-    Install-domaincontroller -ScriptFolder $ScriptFolder `
-                             -ComputerName $ComputerName `
-                             -IPAddress $IPAddress `
-                             -DomainName 'd2cit.it' `
-                             -DomainUsername 'd2cit\adminmw' `
-                             -DomainDN "DC=d2cit,DC=it" `
-                             -rebootNodeIfNeeded $false
+    Install-domaincontroller    -ScriptFolder $ScriptFolder `
+                                -ComputerName $ComputerName `
+                                -IPAddress $IPAddress `
+                                -DomainName 'd2cit.it' `
+                                -DomainUsername 'd2cit\adminmw' `
+                                -DomainDN "DC=d2cit,DC=it" `
+                                -rebootNodeIfNeeded $false

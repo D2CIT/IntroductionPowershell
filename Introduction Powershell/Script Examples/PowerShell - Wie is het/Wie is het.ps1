@@ -46,8 +46,8 @@ function start-wieishet{
 function get-question {
 
     param(
-       [ValidateSet("geslacht", "bril", "Hoofddeksel","naam","Haarkleur","mond","neus","lengte_haar","gezichtshaar","rodewangen")]
-       $question 
+        [ValidateSet("geslacht", "bril", "Hoofddeksel","naam","Haarkleur","mond","neus","lengte_haar","gezichtshaar","rodewangen")]
+        $question 
     
     )
 
